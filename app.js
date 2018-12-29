@@ -12,7 +12,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('*', (req, res) =>
+require('./routes')(app);
+
+app.get('/', (req, res) =>
     res.status(200).send({
         message: 'Welcome to the beginning of nothingness.',
     }),

@@ -2,16 +2,19 @@
     "development": {
         "database": "cardamon",
         "host": "/var/run/postgresql",
-        "dialect": "postgres"
+        "dialect": "postgres",
+        "operatorsAliases": false
     },
     "test": {
         "database": "cardamon_test",
         "host": "/var/run/postgresql",
-        "dialect": "postgres"
+        "dialect": "postgres",
+        "operatorsAliases": false
     },
     "production": {
         "database": "cardamon",
         "host": "/var/run/postgresql",
-        "dialect": "postgres"
+        "dialect": "postgres",
+        "operatorsAliases": false
     }
 }
