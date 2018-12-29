@@ -1,0 +1,17 @@
+{
+    "development": {
+        "database": "cardamon",
+        "host": "/var/run/postgresql",
+        "dialect": "postgres"
+    },
+    "test": {
+        "database": "cardamon_test",
+        "host": "/var/run/postgresql",
+        "dialect": "postgres"
+    },
+    "production": {
+        "database": "cardamon",
+        "host": "/var/run/postgresql",
+        "dialect": "postgres"
+    }
+}

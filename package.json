@@ -15,7 +15,10 @@
     "debug": "^4.1.1",
     "express": "^4.16.4",
     "http-errors": "^1.7.1",
-    "morgan": "^1.9.1"
+    "morgan": "^1.9.1",
+    "pg": "^7.7.1",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.42.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
