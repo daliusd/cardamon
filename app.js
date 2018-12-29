@@ -6,7 +6,9 @@ const path = require('path');
 
 const app = express();
 
-app.use(logger('dev'));
+if (app.get('env') !== 'test') {
+    app.use(logger('dev'));
+}
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -20,11 +22,16 @@ app.get('/', (req, res) =>
     }),
 );
 
+app.get('/__OOPS__', () => {
+    throw 'oops';
+});
+
 app.use(function(req, res, next) {
     next(createError(404));
 });
 
-app.use(function(err, req, res) {
+// eslint-disable-next-line no-unused-vars
+app.use(function(err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
