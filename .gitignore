@@ -1,0 +1,7 @@
+tags
+
+# Saffron dependencies
+/node_modules
+/coverage
+
+npm-debug.log*
