@@ -1,6 +1,7 @@
 const passwordHash = require('password-hash');
-const jwt = require('jsonwebtoken');
-const config = require('../config');
+const winston = require('winston');
+
+const tokens = require('./tokens');
 
 const User = require('../models').User;
 
@@ -18,14 +19,13 @@ module.exports = {
                 password: passwordHash.generate(req.body.password),
             });
 
-            const access_token = jwt.sign({ id: username }, config.secret, { expiresIn: 60 * 60 });
-            const refresh_token = jwt.sign({ id: username, refresh: true }, config.secret, {
-                expiresIn: 365 * 24 * 60 * 60,
-            });
+            const access_token = tokens.createAccessToken(username);
+            const refresh_token = tokens.createRefreshToken(username);
 
             return res.status(201).send({ access_token, refresh_token, message: `User ${username} was created.` });
         } catch (error) {
-            return res.status(400).send(error);
+            winston.log('error', error);
+            return res.status(400).send({ message: 'Unexpected error.' });
         }
     },
 };

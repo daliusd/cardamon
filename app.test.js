@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('./app');
+const crypto = require('crypto');
 
 beforeAll(async () => {
     await require('./models').sequelize.sync({ force: true, logging: false });
@@ -46,5 +47,69 @@ describe('POST /api/users', () => {
             .post('/api/users')
             .send({ username: 'test', password: 'test123' });
         expect(response2.status).toBe(409);
+    });
+});
+
+const createUser = async () => {
+    const username = crypto.randomBytes(20).toString('hex');
+    const resp = await request(app)
+        .post('/api/users')
+        .send({ username, password: username });
+
+    if (resp.status !== 201) {
+        throw 'Failed to create user.';
+    }
+
+    return username;
+};
+
+describe('POST /api/tokens', () => {
+    it('gets token for user', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        expect(resp.body).toEqual(
+            expect.objectContaining({
+                access_token: expect.any(String),
+                refresh_token: expect.any(String),
+            }),
+        );
+
+        resp = await request(app)
+            .post('/api/tokens')
+            .send({ username: username + username, password: username });
+
+        expect(resp.status).toBe(404);
+
+        resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: 'meh' });
+
+        expect(resp.status).toBe(400);
+    });
+});
+
+describe('Test access tokens', () => {
+    it('gets access token using refresh token', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const refresh_token = resp.body.refresh_token;
+
+        resp = await request(app)
+            .post('/api/access_tokens')
+            .set('Authorization', 'Bearer ' + refresh_token)
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        expect('access_token' in resp.body).toBeTruthy();
     });
 });
