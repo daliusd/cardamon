@@ -6,6 +6,9 @@ const path = require('path');
 
 const app = express();
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 if (app.get('env') !== 'test') {
     app.use(logger('dev'));
 }
