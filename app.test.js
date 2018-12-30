@@ -290,3 +290,98 @@ describe('Test games', () => {
         expect(resp.status).toBe(404);
     });
 });
+
+describe('Test cardsets', () => {
+    it('runs cardsets life-cycle', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const access_token = resp.body.access_token;
+
+        // Create game
+        resp = await request(app)
+            .post('/api/games')
+            .set('Authorization', 'Bearer ' + access_token)
+            .send({ name: 'test cardset' });
+        expect(resp.status).toBe(201);
+        expect('game_id' in resp.body).toBeTruthy();
+
+        const game_id = resp.body.game_id;
+
+        // Create cardset
+        resp = await request(app)
+            .post('/api/cardsets')
+            .set('Authorization', 'Bearer ' + access_token)
+            .send({ name: 'test cardset', data: '{}', game_id });
+        expect(resp.status).toBe(201);
+        expect('cardset_id' in resp.body).toBeTruthy();
+
+        const cardset_id = resp.body.cardset_id;
+
+        // Get all cardsets
+
+        resp = await request(app)
+            .get('/api/games/' + game_id)
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['cardsets']).toHaveLength(1);
+        expect(resp.body['cardsets'][0]['name']).toEqual('test cardset');
+        expect(resp.body['cardsets'][0]['id']).toEqual(cardset_id);
+        expect('data' in resp.body['cardsets'][0]).toBeFalsy();
+
+        // Get cardset
+
+        resp = await request(app)
+            .get('/api/cardsets/' + cardset_id)
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['name']).toEqual('test cardset');
+        expect(resp.body['id']).toEqual(cardset_id);
+        expect(resp.body['game_id']).toEqual(game_id);
+
+        // Update game
+
+        resp = await request(app)
+            .put('/api/cardsets/' + cardset_id)
+            .set('Authorization', 'Bearer ' + access_token)
+            .send({ name: 'test cardset 2', data: '{"data": "updated"}' });
+        expect(resp.status).toBe(200);
+
+        resp = await request(app)
+            .get('/api/cardsets/' + cardset_id)
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['name']).toEqual('test cardset 2');
+        expect(resp.body['data']).toEqual('{"data": "updated"}');
+        expect(resp.body['id']).toEqual(cardset_id);
+
+        resp = await request(app)
+            .delete('/api/cardsets/' + cardset_id)
+            .set('Authorization', 'Bearer ' + access_token);
+        expect(resp.status).toBe(200);
+
+        resp = await request(app)
+            .delete('/api/cardsets/' + cardset_id)
+            .set('Authorization', 'Bearer ' + access_token);
+        expect(resp.status).toBe(404);
+
+        resp = await request(app)
+            .get('/api/cardsets/' + cardset_id)
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(404);
+
+        resp = await request(app)
+            .put('/api/cardsets/' + cardset_id)
+            .set('Authorization', 'Bearer ' + access_token)
+            .send({ name: 'test cardset 3', data: '{}' });
+        expect(resp.status).toBe(404);
+    });
+});

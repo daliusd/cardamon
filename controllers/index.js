@@ -3,6 +3,7 @@ const tokens = require('./tokens');
 const access_tokens = require('./access_tokens');
 const refresh_tokens = require('./refresh_tokens');
 const games = require('./games');
+const cardsets = require('./cardsets');
 
 module.exports = {
     users,
@@ -10,4 +11,5 @@ module.exports = {
     access_tokens,
     refresh_tokens,
     games,
+    cardsets,
 };

@@ -3,6 +3,7 @@ const tokensController = require('../controllers').tokens;
 const accessTokensController = require('../controllers').access_tokens;
 const refreshTokensController = require('../controllers').refresh_tokens;
 const gamesController = require('../controllers').games;
+const cardsetsController = require('../controllers').cardsets;
 
 const jwtauth = require('./jwtauth');
 
@@ -30,4 +31,9 @@ module.exports = app => {
     app.get('/api/games/:id', [jwtauth.verifyToken], gamesController.getById);
     app.put('/api/games/:id', [jwtauth.verifyToken], gamesController.update);
     app.delete('/api/games/:id', [jwtauth.verifyToken], gamesController.destroy);
+
+    app.post('/api/cardsets', [jwtauth.verifyToken], cardsetsController.create);
+    app.get('/api/cardsets/:id', [jwtauth.verifyToken], cardsetsController.getById);
+    app.put('/api/cardsets/:id', [jwtauth.verifyToken], cardsetsController.update);
+    app.delete('/api/cardsets/:id', [jwtauth.verifyToken], cardsetsController.destroy);
 };
