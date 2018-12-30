@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon ./bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx jest --coverage --watch"
   },
   "keywords": [],
   "author": "",
