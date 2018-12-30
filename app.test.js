@@ -152,9 +152,56 @@ describe('Test access tokens', () => {
 
         resp = await request(app)
             .post('/api/access_tokens')
-            .set('Authorization', 'Bearer ' + refresh_token)
-            .send({ username, password: username });
+            .set('Authorization', 'Bearer ' + refresh_token);
 
         expect(resp.status).toBe(401);
+    });
+
+    it('tries to access protected resources without token', async () => {
+        let resp = await request(app).get('/api/auth');
+
+        expect(resp.status).toBe(403);
+
+        resp = await request(app).post('/api/access_tokens');
+
+        expect(resp.status).toBe(403);
+    });
+
+    it('tries to access protected resources with fake token', async () => {
+        let resp = await request(app)
+            .get('/api/auth')
+            .set('Authorization', 'Bearer fake_token');
+
+        expect(resp.status).toBe(500);
+
+        resp = await request(app)
+            .post('/api/access_tokens')
+            .set('Authorization', 'Bearer fake_token');
+
+        expect(resp.status).toBe(500);
+    });
+
+    it('tries to access protected resources with wrong type of token', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const access_token = resp.body.access_token;
+        const refresh_token = resp.body.refresh_token;
+
+        resp = await request(app)
+            .get('/api/auth')
+            .set('Authorization', 'Bearer ' + refresh_token);
+
+        expect(resp.status).toBe(403);
+
+        resp = await request(app)
+            .post('/api/access_tokens')
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(403);
     });
 });
