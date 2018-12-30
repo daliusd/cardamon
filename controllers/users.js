@@ -14,13 +14,13 @@ module.exports = {
                 return res.status(409).send({ message: `User ${username} already exists.` });
             }
 
-            await User.create({
+            const user = await User.create({
                 username,
                 password: passwordHash.generate(req.body.password),
             });
 
-            const access_token = tokens.createAccessToken(username);
-            const refresh_token = tokens.createRefreshToken(username);
+            const access_token = tokens.createAccessToken(user.id);
+            const refresh_token = tokens.createRefreshToken(user.id);
 
             return res.status(201).send({ access_token, refresh_token, message: `User ${username} was created.` });
         } catch (error) {
