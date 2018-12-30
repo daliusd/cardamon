@@ -79,6 +79,14 @@ describe('POST /api/tokens', () => {
             }),
         );
 
+        const access_token = resp.body.access_token;
+
+        resp = await request(app)
+            .get('/api/auth')
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+
         resp = await request(app)
             .post('/api/tokens')
             .send({ username: username + username, password: username });
@@ -111,5 +119,42 @@ describe('Test access tokens', () => {
 
         expect(resp.status).toBe(200);
         expect('access_token' in resp.body).toBeTruthy();
+    });
+
+    it('deletes tokens', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const access_token = resp.body.access_token;
+        const refresh_token = resp.body.refresh_token;
+
+        resp = await request(app)
+            .delete('/api/access_tokens')
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+
+        resp = await request(app)
+            .delete('/api/refresh_tokens')
+            .set('Authorization', 'Bearer ' + refresh_token);
+
+        expect(resp.status).toBe(200);
+
+        resp = await request(app)
+            .get('/api/auth')
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(401);
+
+        resp = await request(app)
+            .post('/api/access_tokens')
+            .set('Authorization', 'Bearer ' + refresh_token)
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(401);
     });
 });

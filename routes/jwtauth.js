@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+
 const config = require('../config');
+const RevokedToken = require('../models').RevokedToken;
 
 const verifyToken = (req, res, next) => {
     let token = req.headers['authorization'];
@@ -11,7 +13,9 @@ const verifyToken = (req, res, next) => {
         });
     }
 
-    jwt.verify(token.substring(7), config.secret, (err, decoded) => {
+    token = token.substring(7);
+
+    jwt.verify(token, config.secret, (err, decoded) => {
         if (err) {
             return res.status(500).send({
                 auth: false,
@@ -24,8 +28,17 @@ const verifyToken = (req, res, next) => {
                 message: 'No valid token provided.',
             });
         }
-        req.user = decoded.id;
-        next();
+
+        RevokedToken.findOne({ where: { token } }).then(revokedToken => {
+            if (revokedToken) {
+                return res.status(401).send({
+                    auth: false,
+                });
+            }
+
+            req.user = decoded.id;
+            next();
+        });
     });
 };
 
@@ -39,7 +52,9 @@ const verifyRefreshToken = (req, res, next) => {
         });
     }
 
-    jwt.verify(token.substring(7), config.secret, (err, decoded) => {
+    token = token.substring(7);
+
+    jwt.verify(token, config.secret, (err, decoded) => {
         if (err) {
             return res.status(500).send({
                 auth: false,
@@ -52,8 +67,17 @@ const verifyRefreshToken = (req, res, next) => {
                 message: 'No valid token provided.',
             });
         }
-        req.user = decoded.id;
-        next();
+
+        RevokedToken.findOne({ where: { token } }).then(revokedToken => {
+            if (revokedToken) {
+                return res.status(401).send({
+                    auth: false,
+                });
+            }
+
+            req.user = decoded.id;
+            next();
+        });
     });
 };
 
