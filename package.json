@@ -20,8 +20,7 @@
     "password-hash": "^1.2.2",
     "pg": "^7.7.1",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.42.0",
-    "winston": "^3.1.0"
+    "sequelize": "^4.42.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",

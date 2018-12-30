@@ -1,5 +1,4 @@
 const passwordHash = require('password-hash');
-const winston = require('winston');
 
 const tokens = require('./tokens');
 
@@ -24,8 +23,7 @@ module.exports = {
 
             return res.status(201).send({ access_token, refresh_token, message: `User ${username} was created.` });
         } catch (error) {
-            winston.log('error', error);
-            return res.status(400).send({ message: 'Unexpected error.' });
+            throw error;
         }
     },
 };

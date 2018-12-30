@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const passwordHash = require('password-hash');
-const winston = require('winston');
 
 const config = require('../config');
 
@@ -34,8 +33,7 @@ module.exports = {
 
             return res.status(200).send({ access_token, refresh_token, message: `Logged in as ${username}.` });
         } catch (error) {
-            winston.log('error', error);
-            return res.status(400).send({ message: 'Unexpected error.' });
+            throw error;
         }
     },
 };

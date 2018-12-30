@@ -205,3 +205,88 @@ describe('Test access tokens', () => {
         expect(resp.status).toBe(403);
     });
 });
+
+describe('Test games', () => {
+    it('runs game life-cycle', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const access_token = resp.body.access_token;
+
+        // Create game
+        resp = await request(app)
+            .post('/api/games')
+            .set('Authorization', 'Bearer ' + access_token)
+            .send({ name: 'test game' });
+        expect(resp.status).toBe(201);
+        expect('game_id' in resp.body).toBeTruthy();
+
+        const game_id = resp.body.game_id;
+        // Get all games
+
+        resp = await request(app)
+            .get('/api/games')
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+
+        expect(resp.body['games']).toHaveLength(1);
+        expect(resp.body['games'][0]['name']).toEqual('test game');
+        expect(resp.body['games'][0]['id']).toEqual(game_id);
+
+        // Get game
+
+        resp = await request(app)
+            .get('/api/games/' + game_id)
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+
+        expect(resp.body['name']).toEqual('test game');
+        expect(resp.body['id']).toEqual(game_id);
+
+        // Update game
+
+        resp = await request(app)
+            .put('/api/games/' + game_id)
+            .set('Authorization', 'Bearer ' + access_token)
+            .send({ name: 'test game 2' });
+        expect(resp.status).toBe(200);
+
+        resp = await request(app)
+            .get('/api/games/' + game_id)
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['name']).toEqual('test game 2');
+        expect(resp.body['id']).toEqual(game_id);
+
+        // Delete game
+
+        resp = await request(app)
+            .delete('/api/games/' + game_id)
+            .set('Authorization', 'Bearer ' + access_token);
+        expect(resp.status).toBe(200);
+
+        resp = await request(app)
+            .delete('/api/games/' + game_id)
+            .set('Authorization', 'Bearer ' + access_token);
+        expect(resp.status).toBe(404);
+
+        resp = await request(app)
+            .get('/api/games/' + game_id)
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(404);
+
+        resp = await request(app)
+            .put('/api/games/' + game_id)
+            .set('Authorization', 'Bearer ' + access_token)
+            .send({ name: 'test game 3' });
+        expect(resp.status).toBe(404);
+    });
+});
