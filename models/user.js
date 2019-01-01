@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'ownerId',
             as: 'cardsets',
         });
+        User.hasMany(models.Image, {
+            foreignKey: 'ownerId',
+            as: 'images',
+        });
         // associations can be defined here
     };
     return User;

@@ -385,3 +385,108 @@ describe('Test cardsets', () => {
         expect(resp.status).toBe(404);
     });
 });
+
+describe('Test images', () => {
+    it('runs images life-cycle', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const access_token = resp.body.access_token;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + access_token)
+            .field('global', 'true')
+            .field('name', 'test_fly.svg')
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(201);
+        expect('image_id' in resp.body).toBeTruthy();
+
+        const image_id = resp.body.image_id;
+
+        // Get all images
+
+        resp = await request(app)
+            .get('/api/images')
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['images']).toHaveLength(1);
+        expect(resp.body['images'][0]['name']).toEqual('test_fly.svg');
+        expect(resp.body['images'][0]['id']).toEqual(image_id);
+
+        // Get image
+
+        resp = await request(app)
+            .get('/api/images/' + image_id)
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+        expect(resp.header['content-disposition']).toEqual('attachment; filename=test_fly.svg');
+        expect(resp.header['content-type']).toEqual('image/svg+xml');
+
+        // Delete image
+
+        resp = await request(app)
+            .delete('/api/images/' + image_id)
+            .set('Authorization', 'Bearer ' + access_token);
+        expect(resp.status).toBe(200);
+
+        resp = await request(app)
+            .delete('/api/images/' + image_id)
+            .set('Authorization', 'Bearer ' + access_token);
+        expect(resp.status).toBe(404);
+
+        resp = await request(app)
+            .get('/api/images/' + image_id)
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(404);
+    });
+
+    it('Get all filters images properly', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const access_token = resp.body.access_token;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + access_token)
+            .field('global', 'true')
+            .field('name', 'test_filter_fly.svg')
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(201);
+        expect('image_id' in resp.body).toBeTruthy();
+
+        const image_id = resp.body.image_id;
+
+        // Get only requested image
+
+        resp = await request(app)
+            .get('/api/images?name=filter_fly')
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['images']).toHaveLength(1);
+        expect(resp.body['images'][0]['name']).toEqual('test_filter_fly.svg');
+        expect(resp.body['images'][0]['id']).toEqual(image_id);
+
+        resp = await request(app)
+            .get('/api/images?name=zzzzz')
+            .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['images']).toHaveLength(0);
+    });
+});
