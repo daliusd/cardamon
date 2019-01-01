@@ -1,0 +1,12 @@
+{
+  "libs": [
+    "ecmascript"
+  ],
+  "plugins": {
+    "node": {},
+    "modules": {}
+  },
+  "loadEagerly": [
+    "node_modules/expect/build/**/*.js"
+  ]
+}
