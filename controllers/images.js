@@ -7,19 +7,22 @@ const Op = Sequelize.Op;
 
 module.exports = {
     async create(req, res) {
-        try {
-            const image = await Image.create({
-                type: req.file.mimetype,
-                name: req.body.name,
-                data: req.file.buffer,
-                ownerId: req.user,
-                global: req.body.global === 'true',
-            });
-
-            res.status(201).json({ message: 'Image uploaded successfully!', image_id: image.id });
-        } catch (error) {
-            throw error;
+        const images = await Image.findAll({
+            where: { name: req.body.name },
+        });
+        if (images.length !== 0) {
+            return res.status(409).send({ message: 'Image with this name already exists' });
         }
+
+        const image = await Image.create({
+            type: req.file.mimetype,
+            name: req.body.name,
+            data: req.file.buffer,
+            ownerId: req.user,
+            global: req.body.global === 'true',
+        });
+
+        res.status(201).json({ message: 'Image uploaded successfully!', image_id: image.id });
     },
 
     async getAll(req, res) {

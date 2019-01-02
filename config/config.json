@@ -3,7 +3,8 @@
         "database": "cardamon",
         "host": "/var/run/postgresql",
         "dialect": "postgres",
-        "operatorsAliases": false
+        "operatorsAliases": false,
+        "logging": false
     },
     "test": {
         "database": "cardamon_test",
@@ -16,6 +17,7 @@
         "database": "cardamon",
         "host": "/var/run/postgresql",
         "dialect": "postgres",
-        "operatorsAliases": false
+        "operatorsAliases": false,
+        "logging": false
     }
 }

@@ -409,6 +409,14 @@ describe('Test images', () => {
 
         const image_id = resp.body.image_id;
 
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + access_token)
+            .field('global', 'true')
+            .field('name', 'test_fly.svg')
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(409);
+
         // Get all images
 
         resp = await request(app)

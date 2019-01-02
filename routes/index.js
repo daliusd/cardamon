@@ -10,6 +10,16 @@ const upload = require('../config/multer.config.js');
 
 const jwtauth = require('./jwtauth');
 
+const awaitHandlerFactory = middleware => {
+    return async (req, res, next) => {
+        try {
+            await middleware(req, res, next);
+        } catch (err) {
+            next(err);
+        }
+    };
+};
+
 module.exports = app => {
     app.get('/api', (req, res) =>
         res.status(200).send({
@@ -40,7 +50,11 @@ module.exports = app => {
     app.put('/api/cardsets/:id', [jwtauth.verifyToken], cardsetsController.update);
     app.delete('/api/cardsets/:id', [jwtauth.verifyToken], cardsetsController.destroy);
 
-    app.post('/api/images', [jwtauth.verifyToken, upload.single('image')], imagesController.create);
+    app.post(
+        '/api/images',
+        [jwtauth.verifyToken, upload.single('image')],
+        awaitHandlerFactory(imagesController.create),
+    );
     app.get('/api/images', [jwtauth.verifyToken], imagesController.getAll);
     app.get('/api/images/:id', [jwtauth.verifyToken], imagesController.getById);
     app.delete('/api/images/:id', [jwtauth.verifyToken], imagesController.destroy);
