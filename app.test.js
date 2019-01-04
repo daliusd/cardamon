@@ -63,6 +63,18 @@ const createUser = async () => {
     return username;
 };
 
+const getToken = async username => {
+    let resp = await request(app)
+        .post('/api/tokens')
+        .send({ username, password: username });
+
+    if (resp.status !== 200) {
+        throw 'Failed to get Token.';
+    }
+
+    return resp.body.access_token;
+};
+
 describe('POST /api/tokens', () => {
     it('gets token for user', async () => {
         const username = await createUser();
@@ -493,6 +505,74 @@ describe('Test images', () => {
         resp = await request(app)
             .get('/api/images?name=zzzzz')
             .set('Authorization', 'Bearer ' + access_token);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['images']).toHaveLength(0);
+    });
+
+    it('User can access global images created by another user', async () => {
+        const username = await createUser();
+        const access_token = await getToken(username);
+
+        // Create image
+        let resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + access_token)
+            .field('global', 'true')
+            .field('name', username + 'test_filter_fly.svg')
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(201);
+        expect('image_id' in resp.body).toBeTruthy();
+
+        const image_id = resp.body.image_id;
+
+        // Get created image with another user
+        const username2 = await createUser();
+        const access_token2 = await getToken(username2);
+
+        resp = await request(app)
+            .get('/api/images/' + image_id)
+            .set('Authorization', 'Bearer ' + access_token2);
+
+        expect(resp.status).toBe(200);
+
+        resp = await request(app)
+            .get('/api/images?name=' + username)
+            .set('Authorization', 'Bearer ' + access_token2);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['images']).toHaveLength(1);
+        expect(resp.body['images'][0]['id']).toEqual(image_id);
+    });
+
+    it('User can not access non global images created by another user', async () => {
+        const username = await createUser();
+        const access_token = await getToken(username);
+
+        // Create image
+        let resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + access_token)
+            .field('name', username + 'test_filter_fly.svg')
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(201);
+        expect('image_id' in resp.body).toBeTruthy();
+
+        const image_id = resp.body.image_id;
+
+        // Get created image with another user
+        const username2 = await createUser();
+        const access_token2 = await getToken(username2);
+
+        resp = await request(app)
+            .get('/api/images/' + image_id)
+            .set('Authorization', 'Bearer ' + access_token2);
+
+        expect(resp.status).toBe(404);
+
+        resp = await request(app)
+            .get('/api/images?name=' + username)
+            .set('Authorization', 'Bearer ' + access_token2);
 
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(0);

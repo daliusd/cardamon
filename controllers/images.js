@@ -30,18 +30,19 @@ module.exports = {
         if (req.query.name) {
             where['name'] = { [Op.like]: `%${req.query.name}%` };
         }
+        where[Op.or] = [{ global: { [Op.eq]: true } }, { ownerId: { [Op.eq]: req.user } }];
         const images = await Image.findAll({ where, attributes: ['id', 'name'] });
         res.json({ images });
     },
 
     async getById(req, res) {
-        const images = await Image.findAll({
-            where: { id: req.params.id, ownerId: req.user },
-        });
-        if (images.length === 0) {
+        const image = await Image.findById(req.params.id);
+        if (!image) {
             return res.status(404).send({ message: 'Image not found' });
         }
-        const image = images[0];
+        if (!image.global && image.ownerId !== req.user) {
+            return res.status(404).send({ message: 'Image not found' });
+        }
 
         var fileContents = Buffer.from(image.data, 'base64');
         var readStream = new stream.PassThrough();
@@ -58,7 +59,7 @@ module.exports = {
             where: { id: req.params.id, ownerId: req.user },
         });
         if (images.length === 0) {
-            return res.status(404).send({ message: 'Game not found' });
+            return res.status(404).send({ message: 'Image not found' });
         }
         const image = images[0];
         image.destroy();
