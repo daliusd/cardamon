@@ -31,7 +31,7 @@ module.exports = {
             where['name'] = { [Op.like]: `%${req.query.name}%` };
         }
         where[Op.or] = [{ global: { [Op.eq]: true } }, { ownerId: { [Op.eq]: req.user } }];
-        const images = await Image.findAll({ where, attributes: ['id', 'name'] });
+        const images = await Image.findAll({ where, attributes: ['id', 'name'], limit: 20 });
         res.json({ images });
     },
 
