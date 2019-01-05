@@ -35,14 +35,14 @@ module.exports = {
         res.json({ images });
     },
 
-    async getById(req, res) {
-        const image = await Image.findById(req.params.id);
-        if (!image) {
+    async getByName(req, res) {
+        const images = await Image.findAll({
+            where: { name: req.params.name },
+        });
+        if (images.length === 0) {
             return res.status(404).send({ message: 'Image not found' });
         }
-        if (!image.global && image.ownerId !== req.user) {
-            return res.status(404).send({ message: 'Image not found' });
-        }
+        const image = images[0];
 
         var fileContents = Buffer.from(image.data, 'base64');
         var readStream = new stream.PassThrough();

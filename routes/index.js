@@ -60,6 +60,7 @@ module.exports = app => {
         awaitHandlerFactory(imagesController.create),
     );
     app.get('/api/images', [jwtauth.verifyToken], awaitHandlerFactory(imagesController.getAll));
-    app.get('/api/images/:id', [jwtauth.verifyToken], awaitHandlerFactory(imagesController.getById));
     app.delete('/api/images/:id', [jwtauth.verifyToken], awaitHandlerFactory(imagesController.destroy));
+
+    app.get('/api/imagefiles/:name', awaitHandlerFactory(imagesController.getByName));
 };

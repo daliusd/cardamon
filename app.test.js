@@ -442,9 +442,7 @@ describe('Test images', () => {
 
         // Get image
 
-        resp = await request(app)
-            .get('/api/images/' + image_id)
-            .set('Authorization', 'Bearer ' + access_token);
+        resp = await request(app).get('/api/imagefiles/test_fly.svg');
 
         expect(resp.status).toBe(200);
         expect(resp.header['content-disposition']).toEqual('attachment; filename=test_fly.svg');
@@ -462,9 +460,7 @@ describe('Test images', () => {
             .set('Authorization', 'Bearer ' + access_token);
         expect(resp.status).toBe(404);
 
-        resp = await request(app)
-            .get('/api/images/' + image_id)
-            .set('Authorization', 'Bearer ' + access_token);
+        resp = await request(app).get('/api/imagefiles/test_fly.svg');
 
         expect(resp.status).toBe(404);
     });
@@ -531,12 +527,6 @@ describe('Test images', () => {
         const access_token2 = await getToken(username2);
 
         resp = await request(app)
-            .get('/api/images/' + image_id)
-            .set('Authorization', 'Bearer ' + access_token2);
-
-        expect(resp.status).toBe(200);
-
-        resp = await request(app)
             .get('/api/images?name=' + username)
             .set('Authorization', 'Bearer ' + access_token2);
 
@@ -563,12 +553,6 @@ describe('Test images', () => {
         // Get created image with another user
         const username2 = await createUser();
         const access_token2 = await getToken(username2);
-
-        resp = await request(app)
-            .get('/api/images/' + image_id)
-            .set('Authorization', 'Bearer ' + access_token2);
-
-        expect(resp.status).toBe(404);
 
         resp = await request(app)
             .get('/api/images?name=' + username)
