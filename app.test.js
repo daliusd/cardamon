@@ -561,4 +561,28 @@ describe('Test images', () => {
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(0);
     });
+
+    it('if-none-match works with images', async () => {
+        const username = await createUser();
+        const access_token = await getToken(username);
+
+        // Create image
+        let resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + access_token)
+            .field('name', 'test_etag_fly.svg')
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(201);
+
+        resp = await request(app).get('/api/imagefiles/test_etag_fly.svg');
+
+        expect(resp.status).toBe(200);
+        expect(resp.headers.etag).toBeDefined();
+
+        const etag = resp.headers.etag;
+        resp = await request(app)
+            .get('/api/imagefiles/test_etag_fly.svg')
+            .set('if-none-match', etag);
+        expect(resp.status).toBe(304);
+    });
 });

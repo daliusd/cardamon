@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const stream = require('stream');
+const crypto = require('crypto');
 
 const Image = require('../models').Image;
 
@@ -43,6 +44,15 @@ module.exports = {
             return res.status(404).send({ message: 'Image not found' });
         }
         const image = images[0];
+        const hash = crypto
+            .createHash('md5')
+            .update(image.updatedAt.toString())
+            .digest('hex');
+
+        res.set('Etag', hash);
+        if (req.get('if-none-match') === hash) {
+            return res.status(304).send();
+        }
 
         var fileContents = Buffer.from(image.data, 'base64');
         var readStream = new stream.PassThrough();
