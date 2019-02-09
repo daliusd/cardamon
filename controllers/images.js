@@ -23,7 +23,7 @@ module.exports = {
             global: req.body.global === 'true',
         });
 
-        res.status(201).json({ message: 'Image uploaded successfully!', image_id: image.id });
+        res.status(201).json({ message: 'Image uploaded successfully!', imageId: image.id });
     },
 
     async getAll(req, res) {

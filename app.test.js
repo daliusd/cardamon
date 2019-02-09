@@ -235,9 +235,9 @@ describe('Test games', () => {
             .set('Authorization', 'Bearer ' + access_token)
             .send({ name: 'test game' });
         expect(resp.status).toBe(201);
-        expect('game_id' in resp.body).toBeTruthy();
+        expect('gameId' in resp.body).toBeTruthy();
 
-        const game_id = resp.body.game_id;
+        const gameId = resp.body.gameId;
         // Get all games
 
         resp = await request(app)
@@ -248,55 +248,55 @@ describe('Test games', () => {
 
         expect(resp.body['games']).toHaveLength(1);
         expect(resp.body['games'][0]['name']).toEqual('test game');
-        expect(resp.body['games'][0]['id']).toEqual(game_id);
+        expect(resp.body['games'][0]['id']).toEqual(gameId);
 
         // Get game
 
         resp = await request(app)
-            .get('/api/games/' + game_id)
+            .get('/api/games/' + gameId)
             .set('Authorization', 'Bearer ' + access_token);
 
         expect(resp.status).toBe(200);
 
         expect(resp.body['name']).toEqual('test game');
-        expect(resp.body['id']).toEqual(game_id);
+        expect(resp.body['id']).toEqual(gameId);
 
         // Update game
 
         resp = await request(app)
-            .put('/api/games/' + game_id)
+            .put('/api/games/' + gameId)
             .set('Authorization', 'Bearer ' + access_token)
             .send({ name: 'test game 2' });
         expect(resp.status).toBe(200);
 
         resp = await request(app)
-            .get('/api/games/' + game_id)
+            .get('/api/games/' + gameId)
             .set('Authorization', 'Bearer ' + access_token);
 
         expect(resp.status).toBe(200);
         expect(resp.body['name']).toEqual('test game 2');
-        expect(resp.body['id']).toEqual(game_id);
+        expect(resp.body['id']).toEqual(gameId);
 
         // Delete game
 
         resp = await request(app)
-            .delete('/api/games/' + game_id)
+            .delete('/api/games/' + gameId)
             .set('Authorization', 'Bearer ' + access_token);
         expect(resp.status).toBe(200);
 
         resp = await request(app)
-            .delete('/api/games/' + game_id)
+            .delete('/api/games/' + gameId)
             .set('Authorization', 'Bearer ' + access_token);
         expect(resp.status).toBe(404);
 
         resp = await request(app)
-            .get('/api/games/' + game_id)
+            .get('/api/games/' + gameId)
             .set('Authorization', 'Bearer ' + access_token);
 
         expect(resp.status).toBe(404);
 
         resp = await request(app)
-            .put('/api/games/' + game_id)
+            .put('/api/games/' + gameId)
             .set('Authorization', 'Bearer ' + access_token)
             .send({ name: 'test game 3' });
         expect(resp.status).toBe(404);
@@ -320,78 +320,78 @@ describe('Test cardsets', () => {
             .set('Authorization', 'Bearer ' + access_token)
             .send({ name: 'test cardset' });
         expect(resp.status).toBe(201);
-        expect('game_id' in resp.body).toBeTruthy();
+        expect('gameId' in resp.body).toBeTruthy();
 
-        const game_id = resp.body.game_id;
+        const gameId = resp.body.gameId;
 
         // Create cardset
         resp = await request(app)
             .post('/api/cardsets')
             .set('Authorization', 'Bearer ' + access_token)
-            .send({ name: 'test cardset', data: '{}', game_id });
+            .send({ name: 'test cardset', data: '{}', gameId });
         expect(resp.status).toBe(201);
-        expect('cardset_id' in resp.body).toBeTruthy();
+        expect('cardsetId' in resp.body).toBeTruthy();
 
-        const cardset_id = resp.body.cardset_id;
+        const cardsetId = resp.body.cardsetId;
 
         // Get all cardsets
 
         resp = await request(app)
-            .get('/api/games/' + game_id)
+            .get('/api/games/' + gameId)
             .set('Authorization', 'Bearer ' + access_token);
 
         expect(resp.status).toBe(200);
         expect(resp.body['cardsets']).toHaveLength(1);
         expect(resp.body['cardsets'][0]['name']).toEqual('test cardset');
-        expect(resp.body['cardsets'][0]['id']).toEqual(cardset_id);
+        expect(resp.body['cardsets'][0]['id']).toEqual(cardsetId);
         expect('data' in resp.body['cardsets'][0]).toBeFalsy();
 
         // Get cardset
 
         resp = await request(app)
-            .get('/api/cardsets/' + cardset_id)
+            .get('/api/cardsets/' + cardsetId)
             .set('Authorization', 'Bearer ' + access_token);
 
         expect(resp.status).toBe(200);
         expect(resp.body['name']).toEqual('test cardset');
-        expect(resp.body['id']).toEqual(cardset_id);
-        expect(resp.body['game_id']).toEqual(game_id);
+        expect(resp.body['id']).toEqual(cardsetId);
+        expect(resp.body['gameId']).toEqual(gameId);
 
         // Update game
 
         resp = await request(app)
-            .put('/api/cardsets/' + cardset_id)
+            .put('/api/cardsets/' + cardsetId)
             .set('Authorization', 'Bearer ' + access_token)
             .send({ name: 'test cardset 2', data: '{"data": "updated"}' });
         expect(resp.status).toBe(200);
 
         resp = await request(app)
-            .get('/api/cardsets/' + cardset_id)
+            .get('/api/cardsets/' + cardsetId)
             .set('Authorization', 'Bearer ' + access_token);
 
         expect(resp.status).toBe(200);
         expect(resp.body['name']).toEqual('test cardset 2');
         expect(resp.body['data']).toEqual('{"data": "updated"}');
-        expect(resp.body['id']).toEqual(cardset_id);
+        expect(resp.body['id']).toEqual(cardsetId);
 
         resp = await request(app)
-            .delete('/api/cardsets/' + cardset_id)
+            .delete('/api/cardsets/' + cardsetId)
             .set('Authorization', 'Bearer ' + access_token);
         expect(resp.status).toBe(200);
 
         resp = await request(app)
-            .delete('/api/cardsets/' + cardset_id)
+            .delete('/api/cardsets/' + cardsetId)
             .set('Authorization', 'Bearer ' + access_token);
         expect(resp.status).toBe(404);
 
         resp = await request(app)
-            .get('/api/cardsets/' + cardset_id)
+            .get('/api/cardsets/' + cardsetId)
             .set('Authorization', 'Bearer ' + access_token);
 
         expect(resp.status).toBe(404);
 
         resp = await request(app)
-            .put('/api/cardsets/' + cardset_id)
+            .put('/api/cardsets/' + cardsetId)
             .set('Authorization', 'Bearer ' + access_token)
             .send({ name: 'test cardset 3', data: '{}' });
         expect(resp.status).toBe(404);
@@ -417,9 +417,9 @@ describe('Test images', () => {
             .field('name', 'test_fly.svg')
             .attach('image', 'test/fly.svg');
         expect(resp.status).toBe(201);
-        expect('image_id' in resp.body).toBeTruthy();
+        expect('imageId' in resp.body).toBeTruthy();
 
-        const image_id = resp.body.image_id;
+        const imageId = resp.body.imageId;
 
         resp = await request(app)
             .post('/api/images')
@@ -438,7 +438,7 @@ describe('Test images', () => {
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(1);
         expect(resp.body['images'][0]['name']).toEqual('test_fly.svg');
-        expect(resp.body['images'][0]['id']).toEqual(image_id);
+        expect(resp.body['images'][0]['id']).toEqual(imageId);
 
         // Get image
 
@@ -451,12 +451,12 @@ describe('Test images', () => {
         // Delete image
 
         resp = await request(app)
-            .delete('/api/images/' + image_id)
+            .delete('/api/images/' + imageId)
             .set('Authorization', 'Bearer ' + access_token);
         expect(resp.status).toBe(200);
 
         resp = await request(app)
-            .delete('/api/images/' + image_id)
+            .delete('/api/images/' + imageId)
             .set('Authorization', 'Bearer ' + access_token);
         expect(resp.status).toBe(404);
 
@@ -483,9 +483,9 @@ describe('Test images', () => {
             .field('name', 'test_filter_fly.svg')
             .attach('image', 'test/fly.svg');
         expect(resp.status).toBe(201);
-        expect('image_id' in resp.body).toBeTruthy();
+        expect('imageId' in resp.body).toBeTruthy();
 
-        const image_id = resp.body.image_id;
+        const imageId = resp.body.imageId;
 
         // Get only requested image
 
@@ -496,7 +496,7 @@ describe('Test images', () => {
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(1);
         expect(resp.body['images'][0]['name']).toEqual('test_filter_fly.svg');
-        expect(resp.body['images'][0]['id']).toEqual(image_id);
+        expect(resp.body['images'][0]['id']).toEqual(imageId);
 
         resp = await request(app)
             .get('/api/images?name=zzzzz')
@@ -518,9 +518,9 @@ describe('Test images', () => {
             .field('name', username + 'test_filter_fly.svg')
             .attach('image', 'test/fly.svg');
         expect(resp.status).toBe(201);
-        expect('image_id' in resp.body).toBeTruthy();
+        expect('imageId' in resp.body).toBeTruthy();
 
-        const image_id = resp.body.image_id;
+        const imageId = resp.body.imageId;
 
         // Get created image with another user
         const username2 = await createUser();
@@ -532,7 +532,7 @@ describe('Test images', () => {
 
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(1);
-        expect(resp.body['images'][0]['id']).toEqual(image_id);
+        expect(resp.body['images'][0]['id']).toEqual(imageId);
     });
 
     it('User can not access non global images created by another user', async () => {
@@ -546,9 +546,7 @@ describe('Test images', () => {
             .field('name', username + 'test_filter_fly.svg')
             .attach('image', 'test/fly.svg');
         expect(resp.status).toBe(201);
-        expect('image_id' in resp.body).toBeTruthy();
-
-        const image_id = resp.body.image_id;
+        expect('imageId' in resp.body).toBeTruthy();
 
         // Get created image with another user
         const username2 = await createUser();

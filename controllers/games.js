@@ -8,7 +8,7 @@ module.exports = {
             ownerId: req.user,
         });
 
-        return res.status(201).send({ message: 'Game created', game_id: game.id.toString() });
+        return res.status(201).send({ message: 'Game created', gameId: game.id.toString() });
     },
 
     async getAll(req, res) {

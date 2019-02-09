@@ -5,11 +5,11 @@ module.exports = {
         const cardset = await Cardset.create({
             name: req.body.name,
             data: req.body.data,
-            gameId: req.body.game_id,
+            gameId: req.body.gameId,
             ownerId: req.user,
         });
 
-        return res.status(201).send({ message: 'Card Set created', cardset_id: cardset.id.toString() });
+        return res.status(201).send({ message: 'Card Set created', cardsetId: cardset.id.toString() });
     },
 
     async getById(req, res) {
@@ -25,7 +25,7 @@ module.exports = {
             id: cardset.id.toString(),
             name: cardset.name,
             data: cardset.data,
-            game_id: cardset.gameId.toString(),
+            gameId: cardset.gameId.toString(),
         });
     },
 
