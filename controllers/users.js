@@ -17,9 +17,9 @@ module.exports = {
             password: passwordHash.generate(req.body.password),
         });
 
-        const access_token = tokens.createAccessToken(user.id);
-        const refresh_token = tokens.createRefreshToken(user.id);
+        const accessToken = tokens.createAccessToken(user.id);
+        const refreshToken = tokens.createRefreshToken(user.id);
 
-        return res.status(201).send({ access_token, refresh_token, message: `User ${username} was created.` });
+        return res.status(201).send({ accessToken, refreshToken, message: `User ${username} was created.` });
     },
 };

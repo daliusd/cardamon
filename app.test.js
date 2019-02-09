@@ -72,7 +72,7 @@ const getToken = async username => {
         throw 'Failed to get Token.';
     }
 
-    return resp.body.access_token;
+    return resp.body.accessToken;
 };
 
 describe('POST /api/tokens', () => {
@@ -86,16 +86,16 @@ describe('POST /api/tokens', () => {
         expect(resp.status).toBe(200);
         expect(resp.body).toEqual(
             expect.objectContaining({
-                access_token: expect.any(String),
-                refresh_token: expect.any(String),
+                accessToken: expect.any(String),
+                refreshToken: expect.any(String),
             }),
         );
 
-        const access_token = resp.body.access_token;
+        const accessToken = resp.body.accessToken;
 
         resp = await request(app)
             .get('/api/auth')
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
 
@@ -122,15 +122,15 @@ describe('Test access tokens', () => {
             .send({ username, password: username });
 
         expect(resp.status).toBe(200);
-        const refresh_token = resp.body.refresh_token;
+        const refreshToken = resp.body.refreshToken;
 
         resp = await request(app)
             .post('/api/access_tokens')
-            .set('Authorization', 'Bearer ' + refresh_token)
+            .set('Authorization', 'Bearer ' + refreshToken)
             .send({ username, password: username });
 
         expect(resp.status).toBe(200);
-        expect('access_token' in resp.body).toBeTruthy();
+        expect('accessToken' in resp.body).toBeTruthy();
     });
 
     it('deletes tokens', async () => {
@@ -141,30 +141,30 @@ describe('Test access tokens', () => {
             .send({ username, password: username });
 
         expect(resp.status).toBe(200);
-        const access_token = resp.body.access_token;
-        const refresh_token = resp.body.refresh_token;
+        const accessToken = resp.body.accessToken;
+        const refreshToken = resp.body.refreshToken;
 
         resp = await request(app)
             .delete('/api/access_tokens')
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
 
         resp = await request(app)
             .delete('/api/refresh_tokens')
-            .set('Authorization', 'Bearer ' + refresh_token);
+            .set('Authorization', 'Bearer ' + refreshToken);
 
         expect(resp.status).toBe(200);
 
         resp = await request(app)
             .get('/api/auth')
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(401);
 
         resp = await request(app)
             .post('/api/access_tokens')
-            .set('Authorization', 'Bearer ' + refresh_token);
+            .set('Authorization', 'Bearer ' + refreshToken);
 
         expect(resp.status).toBe(401);
     });
@@ -201,18 +201,18 @@ describe('Test access tokens', () => {
             .send({ username, password: username });
 
         expect(resp.status).toBe(200);
-        const access_token = resp.body.access_token;
-        const refresh_token = resp.body.refresh_token;
+        const accessToken = resp.body.accessToken;
+        const refreshToken = resp.body.refreshToken;
 
         resp = await request(app)
             .get('/api/auth')
-            .set('Authorization', 'Bearer ' + refresh_token);
+            .set('Authorization', 'Bearer ' + refreshToken);
 
         expect(resp.status).toBe(403);
 
         resp = await request(app)
             .post('/api/access_tokens')
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(403);
     });
@@ -227,12 +227,12 @@ describe('Test games', () => {
             .send({ username, password: username });
 
         expect(resp.status).toBe(200);
-        const access_token = resp.body.access_token;
+        const accessToken = resp.body.accessToken;
 
         // Create game
         resp = await request(app)
             .post('/api/games')
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .send({ name: 'test game' });
         expect(resp.status).toBe(201);
         expect('gameId' in resp.body).toBeTruthy();
@@ -242,7 +242,7 @@ describe('Test games', () => {
 
         resp = await request(app)
             .get('/api/games')
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
 
@@ -254,7 +254,7 @@ describe('Test games', () => {
 
         resp = await request(app)
             .get('/api/games/' + gameId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
 
@@ -265,13 +265,13 @@ describe('Test games', () => {
 
         resp = await request(app)
             .put('/api/games/' + gameId)
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .send({ name: 'test game 2' });
         expect(resp.status).toBe(200);
 
         resp = await request(app)
             .get('/api/games/' + gameId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
         expect(resp.body['name']).toEqual('test game 2');
@@ -281,23 +281,23 @@ describe('Test games', () => {
 
         resp = await request(app)
             .delete('/api/games/' + gameId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
         expect(resp.status).toBe(200);
 
         resp = await request(app)
             .delete('/api/games/' + gameId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
         expect(resp.status).toBe(404);
 
         resp = await request(app)
             .get('/api/games/' + gameId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(404);
 
         resp = await request(app)
             .put('/api/games/' + gameId)
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .send({ name: 'test game 3' });
         expect(resp.status).toBe(404);
     });
@@ -312,12 +312,12 @@ describe('Test cardsets', () => {
             .send({ username, password: username });
 
         expect(resp.status).toBe(200);
-        const access_token = resp.body.access_token;
+        const accessToken = resp.body.accessToken;
 
         // Create game
         resp = await request(app)
             .post('/api/games')
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .send({ name: 'test cardset' });
         expect(resp.status).toBe(201);
         expect('gameId' in resp.body).toBeTruthy();
@@ -327,7 +327,7 @@ describe('Test cardsets', () => {
         // Create cardset
         resp = await request(app)
             .post('/api/cardsets')
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .send({ name: 'test cardset', data: '{}', gameId });
         expect(resp.status).toBe(201);
         expect('cardsetId' in resp.body).toBeTruthy();
@@ -338,7 +338,7 @@ describe('Test cardsets', () => {
 
         resp = await request(app)
             .get('/api/games/' + gameId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
         expect(resp.body['cardsets']).toHaveLength(1);
@@ -350,7 +350,7 @@ describe('Test cardsets', () => {
 
         resp = await request(app)
             .get('/api/cardsets/' + cardsetId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
         expect(resp.body['name']).toEqual('test cardset');
@@ -361,13 +361,13 @@ describe('Test cardsets', () => {
 
         resp = await request(app)
             .put('/api/cardsets/' + cardsetId)
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .send({ name: 'test cardset 2', data: '{"data": "updated"}' });
         expect(resp.status).toBe(200);
 
         resp = await request(app)
             .get('/api/cardsets/' + cardsetId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
         expect(resp.body['name']).toEqual('test cardset 2');
@@ -376,23 +376,23 @@ describe('Test cardsets', () => {
 
         resp = await request(app)
             .delete('/api/cardsets/' + cardsetId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
         expect(resp.status).toBe(200);
 
         resp = await request(app)
             .delete('/api/cardsets/' + cardsetId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
         expect(resp.status).toBe(404);
 
         resp = await request(app)
             .get('/api/cardsets/' + cardsetId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(404);
 
         resp = await request(app)
             .put('/api/cardsets/' + cardsetId)
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .send({ name: 'test cardset 3', data: '{}' });
         expect(resp.status).toBe(404);
     });
@@ -407,12 +407,12 @@ describe('Test images', () => {
             .send({ username, password: username });
 
         expect(resp.status).toBe(200);
-        const access_token = resp.body.access_token;
+        const accessToken = resp.body.accessToken;
 
         // Create image
         resp = await request(app)
             .post('/api/images')
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .field('global', 'true')
             .field('name', 'test_fly.svg')
             .attach('image', 'test/fly.svg');
@@ -423,7 +423,7 @@ describe('Test images', () => {
 
         resp = await request(app)
             .post('/api/images')
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .field('global', 'true')
             .field('name', 'test_fly.svg')
             .attach('image', 'test/fly.svg');
@@ -433,7 +433,7 @@ describe('Test images', () => {
 
         resp = await request(app)
             .get('/api/images')
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(1);
@@ -452,12 +452,12 @@ describe('Test images', () => {
 
         resp = await request(app)
             .delete('/api/images/' + imageId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
         expect(resp.status).toBe(200);
 
         resp = await request(app)
             .delete('/api/images/' + imageId)
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
         expect(resp.status).toBe(404);
 
         resp = await request(app).get('/api/imagefiles/test_fly.svg');
@@ -473,12 +473,12 @@ describe('Test images', () => {
             .send({ username, password: username });
 
         expect(resp.status).toBe(200);
-        const access_token = resp.body.access_token;
+        const accessToken = resp.body.accessToken;
 
         // Create image
         resp = await request(app)
             .post('/api/images')
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .field('global', 'true')
             .field('name', 'test_filter_fly.svg')
             .attach('image', 'test/fly.svg');
@@ -491,7 +491,7 @@ describe('Test images', () => {
 
         resp = await request(app)
             .get('/api/images?name=filter_fly')
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(1);
@@ -500,7 +500,7 @@ describe('Test images', () => {
 
         resp = await request(app)
             .get('/api/images?name=zzzzz')
-            .set('Authorization', 'Bearer ' + access_token);
+            .set('Authorization', 'Bearer ' + accessToken);
 
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(0);
@@ -508,12 +508,12 @@ describe('Test images', () => {
 
     it('User can access global images created by another user', async () => {
         const username = await createUser();
-        const access_token = await getToken(username);
+        const accessToken = await getToken(username);
 
         // Create image
         let resp = await request(app)
             .post('/api/images')
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .field('global', 'true')
             .field('name', username + 'test_filter_fly.svg')
             .attach('image', 'test/fly.svg');
@@ -524,11 +524,11 @@ describe('Test images', () => {
 
         // Get created image with another user
         const username2 = await createUser();
-        const access_token2 = await getToken(username2);
+        const accessToken2 = await getToken(username2);
 
         resp = await request(app)
             .get('/api/images?name=' + username)
-            .set('Authorization', 'Bearer ' + access_token2);
+            .set('Authorization', 'Bearer ' + accessToken2);
 
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(1);
@@ -537,12 +537,12 @@ describe('Test images', () => {
 
     it('User can not access non global images created by another user', async () => {
         const username = await createUser();
-        const access_token = await getToken(username);
+        const accessToken = await getToken(username);
 
         // Create image
         let resp = await request(app)
             .post('/api/images')
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .field('name', username + 'test_filter_fly.svg')
             .attach('image', 'test/fly.svg');
         expect(resp.status).toBe(201);
@@ -550,11 +550,11 @@ describe('Test images', () => {
 
         // Get created image with another user
         const username2 = await createUser();
-        const access_token2 = await getToken(username2);
+        const accessToken2 = await getToken(username2);
 
         resp = await request(app)
             .get('/api/images?name=' + username)
-            .set('Authorization', 'Bearer ' + access_token2);
+            .set('Authorization', 'Bearer ' + accessToken2);
 
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(0);
@@ -562,12 +562,12 @@ describe('Test images', () => {
 
     it('if-none-match works with images', async () => {
         const username = await createUser();
-        const access_token = await getToken(username);
+        const accessToken = await getToken(username);
 
         // Create image
         let resp = await request(app)
             .post('/api/images')
-            .set('Authorization', 'Bearer ' + access_token)
+            .set('Authorization', 'Bearer ' + accessToken)
             .field('name', 'test_etag_fly.svg')
             .attach('image', 'test/fly.svg');
         expect(resp.status).toBe(201);

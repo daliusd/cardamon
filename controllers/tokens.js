@@ -27,9 +27,9 @@ module.exports = {
             return res.status(400).send({ message: 'Wrong credentials.' });
         }
 
-        const access_token = createAccessToken(user.id);
-        const refresh_token = createRefreshToken(user.id);
+        const accessToken = createAccessToken(user.id);
+        const refreshToken = createRefreshToken(user.id);
 
-        return res.status(200).send({ access_token, refresh_token, message: `Logged in as ${username}.` });
+        return res.status(200).send({ accessToken, refreshToken, message: `Logged in as ${username}.` });
     },
 };

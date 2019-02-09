@@ -4,8 +4,8 @@ const tokens = require('./tokens');
 
 module.exports = {
     async create(req, res) {
-        const access_token = tokens.createAccessToken(req.user);
-        return res.status(200).send({ access_token });
+        const accessToken = tokens.createAccessToken(req.user);
+        return res.status(200).send({ accessToken });
     },
     async delete(req, res) {
         const token = req.headers['authorization'].substring(7);
