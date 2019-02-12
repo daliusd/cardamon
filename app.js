@@ -19,14 +19,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 require('./routes')(app);
 
-app.get('/', (req, res) =>
-    res.status(200).send({
-        message: 'Welcome to the beginning of nothingness.',
-    }),
-);
-
 app.get('/__OOPS__', () => {
     throw 'oops';
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
 app.use(function(req, res, next) {
