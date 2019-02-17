@@ -24,3 +24,11 @@ Deployment
 * Run: npx sequelize db:migrate
 
 * Start: pm2 start ecosystem.config.js --env production
+
+* You might as well need to do, pm2 save, pm2 startup (*DO NOT RUN sudo with this command*) if you have not done that
+  yet.  pm2 monit seems to be usable command as well.
+
+* Deploy data using command: ./icons.js --server https://cardamon.ffff.lt
+
+* Deploy behind nginx and Let's Encrypt certificate. Follow instructions here:
+    https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
