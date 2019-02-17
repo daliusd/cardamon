@@ -16,11 +16,6 @@ describe('GET /', () => {
         expect(resp.status).toBe(200);
     });
 
-    it('returns 404 on GET wrong url', async () => {
-        const resp = await request(app).get('/__I_HOPE_THIS_WILL_ALWAYS_WILL_BE_INVALID__');
-        expect(resp.status).toBe(404);
-    });
-
     it('GET /__OOPS__ raises exception', async () => {
         const resp = await request(app).get('/__OOPS__');
         expect(resp.status).toBe(500);

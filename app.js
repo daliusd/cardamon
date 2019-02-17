@@ -1,4 +1,3 @@
-const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
@@ -25,10 +24,6 @@ app.get('/__OOPS__', () => {
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/index.html'));
-});
-
-app.use(function(req, res, next) {
-    next(createError(404));
 });
 
 // eslint-disable-next-line no-unused-vars
