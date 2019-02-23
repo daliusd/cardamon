@@ -32,3 +32,17 @@ Deployment
 
 * Deploy behind nginx and Let's Encrypt certificate. Follow instructions here:
     https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
+
+Database nuances
+----------------
+
+While we are using sequelize-auto-migrations we are not using it for executing migrations. We are using it only go get
+feeling how migration should look like. Run this command to migration view:
+
+npx makemigration --name cardamon
+
+Create migration using sequelize-cli.
+
+npx sequelize migration:create --name admin
+
+Edit created migration.

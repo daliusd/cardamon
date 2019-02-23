@@ -19,12 +19,17 @@ module.exports = {
 
     async getById(req, res) {
         const games = await Game.findAll({
-            where: { id: req.params.id, ownerId: req.user },
+            where: { id: req.params.id },
             include: [{ model: Cardset, as: 'cardsets' }],
         });
         if (games.length === 0) {
             return res.status(404).send({ message: 'Game not found' });
         }
+        let canAccess = games[0].ownerId === req.user || req.admin;
+        if (!canAccess) {
+            return res.status(404).send({ message: 'Game not found' });
+        }
+
         const game = games[0];
 
         return res.status(200).send({

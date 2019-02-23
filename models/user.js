@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNulls: false,
             },
+            admin: {
+                type: DataTypes.BOOLEAN,
+                allowNulls: false,
+                defaultValue: false,
+            },
         },
         {},
     );

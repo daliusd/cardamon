@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         Cardset.belongsTo(models.User, {
             foreignKey: 'ownerId',
             onDelete: 'CASCADE',
+            as: 'owner',
         });
         Cardset.belongsTo(models.Game, {
             foreignKey: 'gameId',

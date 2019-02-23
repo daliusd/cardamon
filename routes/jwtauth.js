@@ -37,6 +37,7 @@ const verifyToken = (req, res, next) => {
             }
 
             req.user = decoded.id;
+            req.admin = decoded.admin || false;
             next();
         });
     });

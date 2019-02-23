@@ -5,8 +5,8 @@ const config = require('../config');
 
 const User = require('../models').User;
 
-const createAccessToken = userId => {
-    return jwt.sign({ id: userId }, config.secret, { expiresIn: 60 * 60 });
+const createAccessToken = (userId, admin) => {
+    return jwt.sign({ id: userId, admin }, config.secret, { expiresIn: 60 * 60 });
 };
 
 const createRefreshToken = userId => {
@@ -27,7 +27,7 @@ module.exports = {
             return res.status(400).send({ message: 'Wrong credentials.' });
         }
 
-        const accessToken = createAccessToken(user.id);
+        const accessToken = createAccessToken(user.id, user.admin);
         const refreshToken = createRefreshToken(user.id);
 
         return res.status(200).send({ accessToken, refreshToken, message: `Logged in as ${username}.` });

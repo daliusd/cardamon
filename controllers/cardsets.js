@@ -14,11 +14,16 @@ module.exports = {
 
     async getById(req, res) {
         const cardsets = await Cardset.findAll({
-            where: { id: req.params.id, ownerId: req.user },
+            where: { id: req.params.id },
         });
         if (cardsets.length === 0) {
             return res.status(404).send({ message: 'Card Set not found' });
         }
+        let canAccess = cardsets[0].ownerId === req.user || req.admin;
+        if (!canAccess) {
+            return res.status(404).send({ message: 'Card Set not found' });
+        }
+
         const cardset = cardsets[0];
 
         return res.status(200).send({
