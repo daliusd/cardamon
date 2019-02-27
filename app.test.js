@@ -443,6 +443,21 @@ describe('Test images', () => {
         expect(resp.header['content-disposition']).toEqual('attachment; filename=test_fly.svg');
         expect(resp.header['content-type']).toEqual('image/svg+xml');
 
+        // Update image
+        resp = await request(app)
+            .post('/api/images/' + imageId)
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send({ name: 'new_name_test', gameId: null });
+        expect(resp.status).toBe(200);
+
+        resp = await request(app)
+            .get('/api/images?name=new_name_test')
+            .set('Authorization', 'Bearer ' + accessToken);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['images']).toHaveLength(1);
+        expect(resp.body['images'][0]['id']).toEqual(imageId);
+
         // Delete image
 
         resp = await request(app)

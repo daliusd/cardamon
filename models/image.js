@@ -16,5 +16,11 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'CASCADE',
         });
     };
+    Image.associate = function(models) {
+        Image.belongsTo(models.Game, {
+            foreignKey: 'gameId',
+            onDelete: 'CASCADE',
+        });
+    };
     return Image;
 };

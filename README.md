@@ -36,13 +36,10 @@ Deployment
 Database nuances
 ----------------
 
-While we are using sequelize-auto-migrations we are not using it for executing migrations. We are using it only go get
-feeling how migration should look like. Run this command to migration view:
+Create migration using sequelize-cli. E.g.:
 
-npx makemigration --name cardamon
-
-Create migration using sequelize-cli.
-
+```
 npx sequelize migration:create --name admin
+```
 
 Edit created migration.

@@ -5,6 +5,7 @@ const refreshTokensController = require('../controllers').refresh_tokens;
 const gamesController = require('../controllers').games;
 const cardsetsController = require('../controllers').cardsets;
 const imagesController = require('../controllers').images;
+const filepondController = require('../controllers').filepond;
 
 const upload = require('../config/multer.config.js');
 
@@ -54,6 +55,7 @@ module.exports = app => {
     app.put('/api/cardsets/:id', [jwtauth.verifyToken], awaitHandlerFactory(cardsetsController.update));
     app.delete('/api/cardsets/:id', [jwtauth.verifyToken], awaitHandlerFactory(cardsetsController.destroy));
 
+    app.post('/api/images/:id', [jwtauth.verifyToken], awaitHandlerFactory(imagesController.update));
     app.post(
         '/api/images',
         [jwtauth.verifyToken, upload.single('image')],
@@ -63,4 +65,6 @@ module.exports = app => {
     app.delete('/api/images/:id', [jwtauth.verifyToken], awaitHandlerFactory(imagesController.destroy));
 
     app.get('/api/imagefiles/:name', awaitHandlerFactory(imagesController.getByName));
+
+    app.post('/api/filepond', upload.single('filepond'), awaitHandlerFactory(filepondController.create));
 };

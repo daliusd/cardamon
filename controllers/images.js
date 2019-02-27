@@ -36,6 +36,30 @@ module.exports = {
         res.json({ images });
     },
 
+    async update(req, res) {
+        const images = await Image.findAll({
+            where: { id: parseInt(req.params.id), [Op.or]: [{ ownerId: null }, { ownerId: req.user }] },
+        });
+        if (images.length === 0) {
+            return res.status(404).send({ message: 'Image not found.' });
+        }
+
+        const image = images[0];
+
+        const hash = crypto
+            .createHash('md5')
+            .update(`${req.user} ${req.gameId}`)
+            .digest('hex');
+
+        await image.update({
+            name: hash + '_' + req.body.name,
+            ownerId: req.user,
+            gameId: req.body.gameId,
+        });
+
+        res.status(200).json({ message: 'Image updated successfully!' });
+    },
+
     async getByName(req, res) {
         const images = await Image.findAll({
             where: { name: req.params.name },
