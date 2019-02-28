@@ -4,13 +4,17 @@ const Image = require('../models').Image;
 
 module.exports = {
     async create(req, res) {
-        const rnd = crypto.randomBytes(16).toString('hex');
+        const hash = crypto
+            .createHash('md5')
+            .update(`${req.user} ${req.body.gameId}`)
+            .digest('hex');
 
         const image = await Image.create({
             type: req.file.mimetype,
-            name: rnd + req.file.originalname,
+            name: hash + '_' + req.file.originalname,
             data: req.file.buffer,
-            ownerId: null,
+            gameId: req.body.gameId,
+            ownerId: req.user,
             global: false,
         });
 

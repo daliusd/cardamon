@@ -66,5 +66,9 @@ module.exports = app => {
 
     app.get('/api/imagefiles/:name', awaitHandlerFactory(imagesController.getByName));
 
-    app.post('/api/filepond', upload.single('filepond'), awaitHandlerFactory(filepondController.create));
+    app.post(
+        '/api/filepond',
+        [jwtauth.verifyToken, upload.single('filepond')],
+        awaitHandlerFactory(filepondController.create),
+    );
 };
