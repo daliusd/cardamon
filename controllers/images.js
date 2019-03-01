@@ -46,7 +46,7 @@ module.exports = {
     async getAll(req, res) {
         let where = {};
         if (req.query.name) {
-            where['name'] = { [Op.like]: `%${req.query.name}%` };
+            where['name'] = { [Op.iLike]: `%${req.query.name}%` };
         }
         where[Op.or] = [{ global: { [Op.eq]: true } }, { ownerId: { [Op.eq]: req.user } }];
         const images = await Image.findAll({ where, attributes: ['id', 'name'], limit: 100 });
