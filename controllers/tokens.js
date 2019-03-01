@@ -9,8 +9,8 @@ const createAccessToken = (userId, admin) => {
     return jwt.sign({ id: userId, admin }, config.secret, { expiresIn: 60 * 60 });
 };
 
-const createRefreshToken = userId => {
-    return jwt.sign({ id: userId, refresh: true }, config.secret, { expiresIn: 365 * 24 * 60 * 60 });
+const createRefreshToken = (userId, admin) => {
+    return jwt.sign({ id: userId, refresh: true, admin }, config.secret, { expiresIn: 365 * 24 * 60 * 60 });
 };
 
 module.exports = {
@@ -28,7 +28,7 @@ module.exports = {
         }
 
         const accessToken = createAccessToken(user.id, user.admin);
-        const refreshToken = createRefreshToken(user.id);
+        const refreshToken = createRefreshToken(user.id, user.admin);
 
         return res.status(200).send({ accessToken, refreshToken, message: `Logged in as ${username}.` });
     },
