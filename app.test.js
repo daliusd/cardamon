@@ -427,7 +427,7 @@ describe('Test images', () => {
             .field('global', 'true')
             .field('name', 'test_fly.svg')
             .attach('image', 'test/fly.svg');
-        expect(resp.status).toBe(409);
+        expect(resp.status).toBe(200);
 
         // Get all images
 
@@ -519,6 +519,49 @@ describe('Test images', () => {
 
         expect(resp.status).toBe(200);
         expect(resp.body['images']).toHaveLength(0);
+    });
+
+    it('Image can be re-uploaded with same name but different content', async () => {
+        const username = await createUser();
+        const accessToken = await getToken(username);
+
+        // Create game
+        let resp = await request(app)
+            .post('/api/games')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send({ name: 'test game re-uploaded' });
+        expect(resp.status).toBe(201);
+        expect('gameId' in resp.body).toBeTruthy();
+
+        const gameId = resp.body.gameId;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .field('global', 'false')
+            .field('gameId', gameId)
+            .field('name', 'test_re_upload.svg')
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(201);
+        expect('imageId' in resp.body).toBeTruthy();
+
+        expect(resp.status).toBe(201);
+        const imageId = resp.body.imageId;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .field('global', 'false')
+            .field('gameId', gameId)
+            .field('name', 'test_re_upload.svg')
+            .attach('image', 'test/owl.svg');
+        expect(resp.status).toBe(200);
+
+        const reuploadImageId = resp.body.imageId;
+
+        expect(reuploadImageId).toEqual(imageId);
     });
 
     it('User can access global images created by another user', async () => {

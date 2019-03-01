@@ -8,13 +8,6 @@ const Op = Sequelize.Op;
 
 module.exports = {
     async create(req, res) {
-        const images = await Image.findAll({
-            where: { name: req.body.name },
-        });
-        if (images.length !== 0) {
-            return res.status(409).send({ message: 'Image with this name already exists' });
-        }
-
         let name = req.body.name || req.file.originalname;
         if (req.body.global === undefined || req.body.global !== 'true') {
             const hash = crypto
@@ -25,12 +18,25 @@ module.exports = {
             name += '_' + hash;
         }
 
+        const images = await Image.findAll({
+            where: { name: name },
+        });
+        if (images.length !== 0) {
+            const image = images[0];
+
+            await image.update({
+                data: req.file.buffer,
+            });
+
+            return res.status(200).json({ message: 'Image re-uploaded successfully!', imageId: image.id });
+        }
+
         const image = await Image.create({
             type: req.file.mimetype,
             name,
             data: req.file.buffer,
             ownerId: req.user,
-            gameId: req.body.gameId || null,
+            gameId: parseInt(req.body.gameId) || null,
             global: req.body.global === 'true',
         });
 
