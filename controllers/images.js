@@ -15,11 +15,22 @@ module.exports = {
             return res.status(409).send({ message: 'Image with this name already exists' });
         }
 
+        let name = req.body.name || req.file.originalname;
+        if (req.body.global === undefined || req.body.global !== 'true') {
+            const hash = crypto
+                .createHash('md5')
+                .update(`${req.user} ${req.body.gameId}`)
+                .digest('hex');
+
+            name += '_' + hash;
+        }
+
         const image = await Image.create({
             type: req.file.mimetype,
-            name: req.body.name,
+            name,
             data: req.file.buffer,
             ownerId: req.user,
+            gameId: req.body.gameId || null,
             global: req.body.global === 'true',
         });
 

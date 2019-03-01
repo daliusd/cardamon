@@ -16,6 +16,11 @@ describe('GET /', () => {
         expect(resp.status).toBe(200);
     });
 
+    it('returns 200 on GET /games', async () => {
+        const resp = await request(app).get('/games');
+        expect(resp.status).toBe(200);
+    });
+
     it('GET /__OOPS__ raises exception', async () => {
         const resp = await request(app).get('/__OOPS__');
         expect(resp.status).toBe(500);
@@ -579,6 +584,7 @@ describe('Test images', () => {
             .post('/api/images')
             .set('Authorization', 'Bearer ' + accessToken)
             .field('name', 'test_etag_fly.svg')
+            .field('global', 'true')
             .attach('image', 'test/fly.svg');
         expect(resp.status).toBe(201);
 

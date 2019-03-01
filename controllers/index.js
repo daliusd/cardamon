@@ -5,7 +5,6 @@ const refresh_tokens = require('./refresh_tokens');
 const games = require('./games');
 const cardsets = require('./cardsets');
 const images = require('./images');
-const filepond = require('./filepond');
 
 module.exports = {
     users,
@@ -15,5 +14,4 @@ module.exports = {
     games,
     cardsets,
     images,
-    filepond,
 };
