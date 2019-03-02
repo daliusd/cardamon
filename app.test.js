@@ -301,6 +301,36 @@ describe('Test games', () => {
             .send({ name: 'test game 3' });
         expect(resp.status).toBe(404);
     });
+
+    it('User cannot access game created by another user', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const accessToken = resp.body.accessToken;
+
+        // Create game
+        resp = await request(app)
+            .post('/api/games')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send({ name: 'test game' });
+        expect(resp.status).toBe(201);
+        expect('gameId' in resp.body).toBeTruthy();
+
+        const gameId = resp.body.gameId;
+
+        // Get game with another user
+        const username2 = await createUser();
+        const accessToken2 = await getToken(username2);
+
+        resp = await request(app)
+            .get('/api/games/' + gameId)
+            .set('Authorization', 'Bearer ' + accessToken2);
+        expect(resp.status).toBe(404);
+    });
 });
 
 describe('Test cardsets', () => {
@@ -396,6 +426,47 @@ describe('Test cardsets', () => {
             .send({ name: 'test cardset 3', data: '{}' });
         expect(resp.status).toBe(404);
     });
+
+    it('User cannot access cardset created by another user', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const accessToken = resp.body.accessToken;
+
+        // Create game
+        resp = await request(app)
+            .post('/api/games')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send({ name: 'test cardset' });
+        expect(resp.status).toBe(201);
+        expect('gameId' in resp.body).toBeTruthy();
+
+        const gameId = resp.body.gameId;
+
+        // Create cardset
+        resp = await request(app)
+            .post('/api/cardsets')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send({ name: 'test cardset', data: '{}', gameId });
+        expect(resp.status).toBe(201);
+        expect('cardsetId' in resp.body).toBeTruthy();
+
+        const cardsetId = resp.body.cardsetId;
+
+        // Get cardset with another user
+
+        const username2 = await createUser();
+        const accessToken2 = await getToken(username2);
+
+        resp = await request(app)
+            .get('/api/cardsets/' + cardsetId)
+            .set('Authorization', 'Bearer ' + accessToken2);
+        expect(resp.status).toBe(404);
+    });
 });
 
 describe('Test images', () => {
@@ -478,6 +549,46 @@ describe('Test images', () => {
         resp = await request(app).get('/api/imagefiles/test_fly.svg');
 
         expect(resp.status).toBe(404);
+
+        // Update deletes image
+        resp = await request(app)
+            .post('/api/images/' + imageId)
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send({ name: 'new_name_test_2', gameId: null });
+        expect(resp.status).toBe(404);
+    });
+
+    it('user file name if name not supplied via params', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const accessToken = resp.body.accessToken;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .field('global', 'true')
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(201);
+        expect('imageId' in resp.body).toBeTruthy();
+
+        const imageId = resp.body.imageId;
+
+        // Get all images
+
+        resp = await request(app)
+            .get('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['images']).toHaveLength(1);
+        expect(resp.body['images'][0]['name']).toEqual('fly.svg');
+        expect(resp.body['images'][0]['id']).toEqual(imageId);
     });
 
     it('Get all filters images properly', async () => {
@@ -612,6 +723,67 @@ describe('Test images', () => {
 
         resp = await request(app)
             .get('/api/images?name=' + username)
+            .set('Authorization', 'Bearer ' + accessToken2);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['images']).toHaveLength(0);
+    });
+
+    it('User can not access user images created by another user', async () => {
+        const username = await createUser();
+        const accessToken = await getToken(username);
+
+        // Create image
+        let resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .field('name', username + 'test_filter_fly.svg')
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(201);
+        expect('imageId' in resp.body).toBeTruthy();
+
+        // Get created image with another user
+        const username2 = await createUser();
+        const accessToken2 = await getToken(username2);
+
+        resp = await request(app)
+            .get(`/api/images?name=${username}&location=user`)
+            .set('Authorization', 'Bearer ' + accessToken2);
+
+        expect(resp.status).toBe(200);
+        expect(resp.body['images']).toHaveLength(0);
+    });
+
+    it('User can not access game images created by another user', async () => {
+        const username = await createUser();
+        const accessToken = await getToken(username);
+
+        // Create game
+        let resp = await request(app)
+            .post('/api/games')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send({ name: 'test game re-uploaded' });
+        expect(resp.status).toBe(201);
+        expect('gameId' in resp.body).toBeTruthy();
+
+        const gameId = resp.body.gameId;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .field('name', username + 'test_filter_fly.svg')
+            .field('gameId', gameId)
+            .attach('image', 'test/fly.svg');
+        expect(resp.status).toBe(201);
+        expect('imageId' in resp.body).toBeTruthy();
+
+        // Get created image with another user
+        const username2 = await createUser();
+        const accessToken2 = await getToken(username2);
+
+        resp = await request(app)
+            .get(`/api/images?name=${username}&location=game&game=${gameId}`)
             .set('Authorization', 'Bearer ' + accessToken2);
 
         expect(resp.status).toBe(200);

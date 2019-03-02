@@ -48,7 +48,15 @@ module.exports = {
         if (req.query.name) {
             where['name'] = { [Op.iLike]: `%${req.query.name}%` };
         }
-        where[Op.or] = [{ global: { [Op.eq]: true } }, { ownerId: { [Op.eq]: req.user } }];
+        if (req.query.location === 'game') {
+            where['gameId'] = req.query.game;
+            where['ownerId'] = req.user;
+        } else if (req.query.location === 'user') {
+            where['global'] = false;
+            where['ownerId'] = req.user;
+        } else {
+            where[Op.or] = [{ global: { [Op.eq]: true } }, { ownerId: { [Op.eq]: req.user } }];
+        }
         const images = await Image.findAll({ where, attributes: ['id', 'name'], limit: 100 });
         res.json({ images });
     },
