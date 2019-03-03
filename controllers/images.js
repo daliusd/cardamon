@@ -12,7 +12,7 @@ module.exports = {
         if (req.body.global === undefined || req.body.global !== 'true') {
             const hash = crypto
                 .createHash('md5')
-                .update(`${req.user} ${req.body.gameId}`)
+                .update(`${req.body.gameId}`)
                 .digest('hex');
 
             name += '_' + hash;
