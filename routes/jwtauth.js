@@ -77,6 +77,7 @@ const verifyRefreshToken = (req, res, next) => {
             }
 
             req.user = decoded.id;
+            req.admin = decoded.admin;
             next();
         });
     });
