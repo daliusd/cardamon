@@ -26,6 +26,7 @@ module.exports = {
 
             await image.update({
                 data: req.file.buffer,
+                metadata: req.body.metadata,
             });
 
             return res.status(200).json({ message: 'Image re-uploaded successfully!', imageId: image.id });
@@ -38,6 +39,7 @@ module.exports = {
             ownerId: req.user,
             gameId: parseInt(req.body.gameId) || null,
             global: req.body.global === 'true',
+            metadata: req.body.metadata,
         });
 
         res.status(201).json({ message: 'Image uploaded successfully!', imageId: image.id });
@@ -46,7 +48,7 @@ module.exports = {
     async getAll(req, res) {
         let where = {};
         if (req.query.name) {
-            where['name'] = { [Op.iLike]: `%${req.query.name}%` };
+            where['name'] = { [Op.iLike]: `%${req.query.name.replace(/ /g, '%')}%` };
         }
         if (req.query.location === 'game') {
             where['gameId'] = req.query.game;

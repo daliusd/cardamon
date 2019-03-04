@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             data: DataTypes.BLOB,
             global: DataTypes.BOOLEAN,
+            metadata: DataTypes.JSON,
         },
         {},
     );
