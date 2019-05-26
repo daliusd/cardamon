@@ -1,6 +1,7 @@
 const request = require('supertest');
 const app = require('./app');
 const crypto = require('crypto');
+const sharp = require('sharp');
 
 beforeAll(async () => {
     await require('./models').sequelize.sync({ force: true, logging: false });
@@ -813,5 +814,138 @@ describe('Test images', () => {
             .get('/api/imagefiles/test_etag_fly.svg')
             .set('if-none-match', etag);
         expect(resp.status).toBe(304);
+    });
+
+    it('jpeg upload works', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const accessToken = resp.body.accessToken;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .field('global', 'true')
+            .field('name', 'test1024.jpeg')
+            .attach('image', 'test/test1024.jpeg');
+        expect(resp.status).toBe(201);
+        expect('imageId' in resp.body).toBeTruthy();
+
+        // Get image
+
+        resp = await request(app).get('/api/imagefiles/test1024.jpeg');
+
+        expect(resp.status).toBe(200);
+        expect(resp.header['content-disposition']).toEqual('attachment; filename=test1024.jpeg');
+        expect(resp.header['content-type']).toEqual('image/jpeg');
+
+        const metadata = await sharp(resp.body).metadata();
+        expect(metadata.width).toEqual(768); // As file is too big it is resized down
+        expect(metadata.height).toEqual(768);
+    });
+
+    it('png upload works', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const accessToken = resp.body.accessToken;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .field('global', 'true')
+            .field('name', 'test1024.png')
+            .attach('image', 'test/test1024.png');
+        expect(resp.status).toBe(201);
+        expect('imageId' in resp.body).toBeTruthy();
+
+        // Get image
+
+        resp = await request(app).get('/api/imagefiles/test1024.png');
+
+        expect(resp.status).toBe(200);
+        expect(resp.header['content-disposition']).toEqual('attachment; filename=test1024.png');
+        expect(resp.header['content-type']).toEqual('image/png');
+
+        const metadata = await sharp(resp.body).metadata();
+        expect(metadata.width).toEqual(768); // As file is too big it is resized down
+        expect(metadata.height).toEqual(768);
+    });
+
+    it('webp upload works. Saved as png', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const accessToken = resp.body.accessToken;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .field('global', 'true')
+            .field('name', 'test1024.webp')
+            .attach('image', 'test/test1024.webp');
+        expect(resp.status).toBe(201);
+        expect('imageId' in resp.body).toBeTruthy();
+
+        // Get image
+
+        resp = await request(app).get('/api/imagefiles/test1024.webp');
+
+        expect(resp.status).toBe(200);
+        expect(resp.header['content-disposition']).toEqual('attachment; filename=test1024.webp');
+        expect(resp.header['content-type']).toEqual('image/png');
+
+        const metadata = await sharp(resp.body).metadata();
+        expect(metadata.width).toEqual(768); // As file is too big it is resized down
+        expect(metadata.height).toEqual(768);
+        expect(metadata.format).toEqual('png');
+    });
+
+    it('if png is already small it is not resized', async () => {
+        const username = await createUser();
+
+        let resp = await request(app)
+            .post('/api/tokens')
+            .send({ username, password: username });
+
+        expect(resp.status).toBe(200);
+        const accessToken = resp.body.accessToken;
+
+        // Create image
+        resp = await request(app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + accessToken)
+            .field('global', 'true')
+            .field('name', 'test512.png')
+            .attach('image', 'test/test512.png');
+        expect(resp.status).toBe(201);
+        expect('imageId' in resp.body).toBeTruthy();
+
+        // Get image
+
+        resp = await request(app).get('/api/imagefiles/test512.png');
+
+        expect(resp.status).toBe(200);
+        expect(resp.header['content-disposition']).toEqual('attachment; filename=test512.png');
+        expect(resp.header['content-type']).toEqual('image/png');
+
+        const metadata = await sharp(resp.body).metadata();
+        expect(metadata.width).toEqual(512);
+        expect(metadata.height).toEqual(512);
     });
 });

@@ -1,13 +1,51 @@
 const Sequelize = require('sequelize');
 const stream = require('stream');
 const crypto = require('crypto');
+const sharp = require('sharp');
 
 const Image = require('../models').Image;
 
 const Op = Sequelize.Op;
 
+const FORMAT_TO_MIMETYPE = {
+    svg: 'image/svg+xml',
+    png: 'image/png',
+    jpeg: 'image/jpeg',
+};
+
+async function getResizedBuffer(input) {
+    let image = sharp(input);
+    const metadata = await image.metadata();
+
+    if (metadata.format === 'svg') {
+        return {
+            buffer: await image.toBuffer(),
+            width: metadata.width,
+            height: metadata.height,
+            format: metadata.format,
+        };
+    }
+
+    if (metadata.width > 768) {
+        image = await image.resize(768);
+    }
+
+    if (metadata.format !== 'jpeg') {
+        image = await image.png();
+    }
+
+    return {
+        buffer: await image.toBuffer(),
+        width: metadata.width,
+        height: metadata.height,
+        format: metadata.format === 'jpeg' ? 'jpeg' : 'png',
+    };
+}
+
 module.exports = {
     async create(req, res) {
+        let imageInfo = await getResizedBuffer(req.file.buffer);
+
         let name = req.body.name || req.file.originalname;
         if (req.body.global === undefined || req.body.global !== 'true') {
             const hash = crypto
@@ -25,21 +63,25 @@ module.exports = {
             const image = images[0];
 
             await image.update({
-                data: req.file.buffer,
+                data: imageInfo.buffer,
                 metadata: req.body.metadata,
+                width: imageInfo.width,
+                height: imageInfo.height,
             });
 
             return res.status(200).json({ message: 'Image re-uploaded successfully!', imageId: image.id });
         }
 
         const image = await Image.create({
-            type: req.file.mimetype,
+            type: FORMAT_TO_MIMETYPE[imageInfo.format],
             name,
-            data: req.file.buffer,
+            data: imageInfo.buffer,
             ownerId: req.user,
             gameId: parseInt(req.body.gameId) || null,
             global: req.body.global === 'true',
             metadata: req.body.metadata,
+            width: imageInfo.width,
+            height: imageInfo.height,
         });
 
         res.status(201).json({ message: 'Image uploaded successfully!', imageId: image.id });
@@ -59,7 +101,7 @@ module.exports = {
         } else {
             where[Op.or] = [{ global: { [Op.eq]: true } }, { ownerId: { [Op.eq]: req.user } }];
         }
-        const images = await Image.findAll({ where, attributes: ['id', 'name'], limit: 100 });
+        const images = await Image.findAll({ where, attributes: ['id', 'name', 'width', 'height'], limit: 100 });
         res.json({ images });
     },
 
