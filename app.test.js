@@ -845,8 +845,8 @@ describe('Test images', () => {
         expect(resp.header['content-type']).toEqual('image/jpeg');
 
         const metadata = await sharp(resp.body).metadata();
-        expect(metadata.width).toEqual(768); // As file is too big it is resized down
-        expect(metadata.height).toEqual(768);
+        expect(metadata.width).toEqual(960); // As file is too big it is resized down
+        expect(metadata.height).toEqual(960);
     });
 
     it('png upload works', async () => {
@@ -878,8 +878,8 @@ describe('Test images', () => {
         expect(resp.header['content-type']).toEqual('image/png');
 
         const metadata = await sharp(resp.body).metadata();
-        expect(metadata.width).toEqual(768); // As file is too big it is resized down
-        expect(metadata.height).toEqual(768);
+        expect(metadata.width).toEqual(960); // As file is too big it is resized down
+        expect(metadata.height).toEqual(960);
     });
 
     it('webp upload works. Saved as png', async () => {
@@ -911,8 +911,8 @@ describe('Test images', () => {
         expect(resp.header['content-type']).toEqual('image/png');
 
         const metadata = await sharp(resp.body).metadata();
-        expect(metadata.width).toEqual(768); // As file is too big it is resized down
-        expect(metadata.height).toEqual(768);
+        expect(metadata.width).toEqual(960); // As file is too big it is resized down
+        expect(metadata.height).toEqual(960);
         expect(metadata.format).toEqual('png');
     });
 

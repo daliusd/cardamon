@@ -26,8 +26,8 @@ async function getResizedBuffer(input) {
         };
     }
 
-    if (metadata.width > 768) {
-        image = await image.resize(768);
+    if (metadata.width > 960) {
+        image = await image.resize(960);
     }
 
     if (metadata.format !== 'jpeg') {
