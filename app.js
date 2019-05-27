@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 const app = express();
 
@@ -35,6 +36,26 @@ app.use(function(err, req, res, next) {
     // render the error page
     res.status(err.status || 500);
     res.render('error');
+
+    let transporter = nodemailer.createTransport({
+        sendmail: true,
+        path: '/usr/sbin/sendmail',
+        args: ['-t', '-f', 'dalius'],
+    });
+    transporter.sendMail(
+        {
+            from: 'dalius',
+            to: 'dalius@ffff.lt',
+            subject: 'cardamon: server side error',
+            text: `${err.stack} ${err}`,
+        },
+        err => {
+            if (err) {
+                // eslint-disable-next-line no-console
+                console.error(err);
+            }
+        },
+    );
 });
 
 module.exports = app;
