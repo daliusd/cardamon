@@ -19,7 +19,7 @@ async function getResizedBuffer(input) {
 
     if (metadata.format === 'svg') {
         return {
-            buffer: await image.toBuffer(),
+            buffer: input,
             width: metadata.width,
             height: metadata.height,
             format: metadata.format,
