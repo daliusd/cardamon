@@ -11,7 +11,7 @@ module.exports = {
             from: 'dalius',
             to: 'dalius@ffff.lt',
             subject: 'cardamon: client side error',
-            text: req.body.error,
+            text: `${req.body.message}\n${req.body.stack}`,
         });
 
         return res.status(201).send({ message: 'sent' });
