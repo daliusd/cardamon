@@ -34,6 +34,8 @@ async function getResizedBuffer(input) {
         image = await image.png();
     }
 
+    image = await image.rotate();
+
     return {
         buffer: await image.toBuffer(),
         width: metadata.width,
