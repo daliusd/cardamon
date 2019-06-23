@@ -103,7 +103,11 @@ module.exports = {
         } else {
             where[Op.or] = [{ global: { [Op.eq]: true } }, { ownerId: { [Op.eq]: req.user } }];
         }
-        const images = await Image.findAll({ where, attributes: ['id', 'name', 'width', 'height'], limit: 100 });
+        const images = await Image.findAll({
+            where,
+            attributes: ['id', 'name', 'width', 'height', 'metadata'],
+            limit: 100,
+        });
         res.json({ images });
     },
 
