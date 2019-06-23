@@ -135,6 +135,28 @@ module.exports = {
         res.status(200).json({ message: 'Image updated successfully!' });
     },
 
+    async getByNameMetadata(req, res) {
+        const images = await Image.findAll({
+            where: { name: req.params.name },
+            attributes: ['id', 'name', 'width', 'height', 'metadata', 'updatedAt'],
+        });
+        if (images.length === 0) {
+            return res.status(404).send({ message: 'Image not found' });
+        }
+        const image = images[0];
+        const hash = crypto
+            .createHash('md5')
+            .update(image.updatedAt.toString())
+            .digest('hex');
+
+        res.set('Etag', hash);
+        if (req.get('if-none-match') === hash) {
+            return res.status(304).send();
+        }
+
+        res.json(image);
+    },
+
     async getByName(req, res) {
         const images = await Image.findAll({
             where: { name: req.params.name },

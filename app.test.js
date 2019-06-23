@@ -514,6 +514,12 @@ describe('Test images', () => {
 
         // Get image
 
+        resp = await request(app)
+            .get('/api/images/test_fly.svg')
+            .set('Authorization', 'Bearer ' + accessToken);
+        expect(resp.status).toBe(200);
+        expect(resp.body['id']).toEqual(imageId);
+
         resp = await request(app).get('/api/imagefiles/test_fly.svg');
 
         expect(resp.status).toBe(200);
@@ -544,6 +550,11 @@ describe('Test images', () => {
 
         resp = await request(app)
             .delete('/api/images/' + imageId)
+            .set('Authorization', 'Bearer ' + accessToken);
+        expect(resp.status).toBe(404);
+
+        resp = await request(app)
+            .get('/api/images/test_fly.svg')
             .set('Authorization', 'Bearer ' + accessToken);
         expect(resp.status).toBe(404);
 
@@ -812,6 +823,12 @@ describe('Test images', () => {
         const etag = resp.headers.etag;
         resp = await request(app)
             .get('/api/imagefiles/test_etag_fly.svg')
+            .set('if-none-match', etag);
+        expect(resp.status).toBe(304);
+
+        resp = await request(app)
+            .get('/api/images/test_etag_fly.svg')
+            .set('Authorization', 'Bearer ' + accessToken)
             .set('if-none-match', etag);
         expect(resp.status).toBe(304);
     });
