@@ -105,7 +105,7 @@ module.exports = {
         }
         const images = await Image.findAll({
             where,
-            attributes: ['id', 'name', 'width', 'height', 'metadata'],
+            attributes: ['id', 'name', 'width', 'height'],
             limit: 100,
         });
         res.json({ images });
