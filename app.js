@@ -42,12 +42,13 @@ app.use(function(err, req, res, next) {
         path: '/usr/sbin/sendmail',
         args: ['-t', '-f', 'dalius'],
     });
+    let headers = JSON.stringify(req.headers, null, 4);
     transporter.sendMail(
         {
             from: 'dalius',
             to: 'dalius@ffff.lt',
             subject: 'cardamon: server side error',
-            text: `${err.stack}\n\n${err}\n\n${JSON.stringify(req.headers, null, 4)}`,
+            text: `${err.stack}\n\n${err}\n\n${req.originalUrl}\n\n${headers}`,
         },
         err => {
             if (err) {
