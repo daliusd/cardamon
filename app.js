@@ -47,7 +47,7 @@ app.use(function(err, req, res, next) {
             from: 'dalius',
             to: 'dalius@ffff.lt',
             subject: 'cardamon: server side error',
-            text: `${err.stack} ${err}`,
+            text: `${err.stack}\n\n${err}\n\n${JSON.stringify(req.headers, null, 4)}`,
         },
         err => {
             if (err) {
