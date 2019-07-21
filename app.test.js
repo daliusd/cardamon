@@ -523,7 +523,7 @@ describe('Test images', () => {
         resp = await request(app).get('/api/imagefiles/test_fly.svg');
 
         expect(resp.status).toBe(200);
-        expect(resp.header['content-disposition']).toEqual('attachment; filename=test_fly.svg');
+        expect(resp.header['content-disposition']).toEqual('attachment; filename="test_fly.svg"');
         expect(resp.header['content-type']).toEqual('image/svg+xml');
 
         // Update image
@@ -858,7 +858,7 @@ describe('Test images', () => {
         resp = await request(app).get('/api/imagefiles/test1024.jpeg');
 
         expect(resp.status).toBe(200);
-        expect(resp.header['content-disposition']).toEqual('attachment; filename=test1024.jpeg');
+        expect(resp.header['content-disposition']).toEqual('attachment; filename="test1024.jpeg"');
         expect(resp.header['content-type']).toEqual('image/jpeg');
 
         const metadata = await sharp(resp.body).metadata();
@@ -891,7 +891,7 @@ describe('Test images', () => {
         resp = await request(app).get('/api/imagefiles/test1024.png');
 
         expect(resp.status).toBe(200);
-        expect(resp.header['content-disposition']).toEqual('attachment; filename=test1024.png');
+        expect(resp.header['content-disposition']).toEqual('attachment; filename="test1024.png"');
         expect(resp.header['content-type']).toEqual('image/png');
 
         const metadata = await sharp(resp.body).metadata();
@@ -924,7 +924,7 @@ describe('Test images', () => {
         resp = await request(app).get('/api/imagefiles/test1024.webp');
 
         expect(resp.status).toBe(200);
-        expect(resp.header['content-disposition']).toEqual('attachment; filename=test1024.webp');
+        expect(resp.header['content-disposition']).toEqual('attachment; filename="test1024.webp"');
         expect(resp.header['content-type']).toEqual('image/png');
 
         const metadata = await sharp(resp.body).metadata();
@@ -958,7 +958,7 @@ describe('Test images', () => {
         resp = await request(app).get('/api/imagefiles/test512.png');
 
         expect(resp.status).toBe(200);
-        expect(resp.header['content-disposition']).toEqual('attachment; filename=test512.png');
+        expect(resp.header['content-disposition']).toEqual('attachment; filename="test512.png"');
         expect(resp.header['content-type']).toEqual('image/png');
 
         const metadata = await sharp(resp.body).metadata();

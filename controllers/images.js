@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const stream = require('stream');
 const crypto = require('crypto');
 const sharp = require('sharp');
+const contentDisposition = require('content-disposition');
 
 const Image = require('../models').Image;
 
@@ -179,7 +180,7 @@ module.exports = {
         var readStream = new stream.PassThrough();
         readStream.end(fileContents);
 
-        res.set('Content-disposition', 'attachment; filename=' + image.name);
+        res.set('Content-disposition', contentDisposition(image.name));
         res.set('Content-Type', image.type);
 
         readStream.pipe(res);
