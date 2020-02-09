@@ -1,5 +1,10 @@
+Cardamon
+========
+
+Running project can be found here: https://cardamon.ffff.lt/
+
 Installation
-============
+------------
 
 npm i
 
