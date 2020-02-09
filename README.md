@@ -33,6 +33,15 @@ Deployment
 * Deploy behind nginx and Let's Encrypt certificate. Follow instructions here:
     https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
 
+Related projects
+----------------
+
+* https://github.com/daliusd/saffron - Card-a-mon front-end.
+
+* https://github.com/daliusd/basil - Library to generate Card-a-mon PDF and PNG files.
+
+* https://github.com/daliusd/pepper - Various tools for Card-a-mon.
+
 Database nuances
 ----------------
 
