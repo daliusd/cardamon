@@ -5,39 +5,39 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./bin/www",
-    "test": "npx jest --coverage --watch"
+    "test": "npx jest --coverage --watchAll"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.19.0",
     "content-disposition": "^0.5.3",
     "debug": "^4.1.1",
-    "ejs": "^2.6.1",
-    "express": "^4.16.4",
-    "http-errors": "^1.7.1",
-    "jsonwebtoken": "^8.4.0",
+    "ejs": "^3.0.1",
+    "express": "^4.17.1",
+    "http-errors": "^1.7.3",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.9.1",
-    "multer": "^1.4.1",
-    "nodemailer": "^6.2.1",
+    "multer": "^1.4.2",
+    "nodemailer": "^6.4.2",
     "password-hash": "^1.2.2",
-    "pg": "^7.7.1",
-    "pg-hstore": "^2.3.2",
-    "sequelize": "^4.42.0",
-    "sequelize-cli": "^5.4.0",
-    "sharp": "^0.22.1"
+    "pg": "^7.18.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.21.4",
+    "sequelize-cli": "^5.5.1",
+    "sharp": "^0.24.0"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.11.1",
-    "eslint-plugin-jest": "^22.1.2",
-    "husky": "^1.3.1",
-    "jest": "^24.1.0",
-    "lint-staged": "^8.1.0",
-    "nodemon": "^1.18.9",
-    "prettier": "^1.15.3",
-    "supertest": "^3.3.0"
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.8.0",
+    "eslint-plugin-jest": "^23.7.0",
+    "husky": "^4.2.1",
+    "jest": "^25.1.0",
+    "lint-staged": "^10.0.7",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
+    "supertest": "^4.0.2"
   },
   "husky": {
     "hooks": {
